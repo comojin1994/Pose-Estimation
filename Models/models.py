@@ -2,9 +2,9 @@ import tensorflow as tf
 from tensorflow.keras import Model
 from tensorflow.keras.layers import Input, Lambda
 from tensorflow.keras.losses import binary_crossentropy, sparse_categorical_crossentropy
-from layers import *
-import model_config
-from utils import broadcast_iou
+from .layers import *
+from .model_config import *
+from .utils import broadcast_iou
 
 def darknetConv(x, filters, size, strides=1, batch_norm=True):
     if strides == 1: padding = 'same'
@@ -114,17 +114,17 @@ def yoloNMS(outputs, anchors, masks, classes):
         boxes=tf.reshape(bbox, (tf.shape(bbox)[0], -1, 1, 4)),
         scores=tf.reshape(
             scores, (tf.shape(scores)[0], -1, tf.shape(scores)[-1])),
-        max_output_size_per_class=model_config.yolo_max_boxes,
-        max_total_size=model_config.yolo_max_boxes,
-        iou_threshold=model_config.yolo_iou_threshold,
-        score_threshold=model_config.yolo_score_threshold
+        max_output_size_per_class=yolo_max_boxes,
+        max_total_size=yolo_max_boxes,
+        iou_threshold=yolo_iou_threshold,
+        score_threshold=yolo_score_threshold
     )
 
     return boxes, scores, classes, valid_detections
 
 
-def yoloV3(size=None, channels=3, anchors=model_config.yolo_anchors,
-           masks=model_config.yolo_anchor_masks, classes=80, training=False):
+def yoloV3(size=None, channels=3, anchors=yolo_anchors,
+           masks=yolo_anchor_masks, classes=80, training=False):
     x = inputs = Input([size, size, channels], name='input')
 
     x_36, x_61, x = darkNet(name='yolo_darknet')(x)
@@ -202,7 +202,7 @@ def yoloLoss(anchors, classes=80, ignore_thresh=0.5):
 if __name__ == '__main__':
     import cv2
     import numpy as np
-    from utils import transform_images
+    from .utils import transform_images
 
     IMG_PATH = f'example.jpg'
     img = tf.image.decode_image(open(IMG_PATH, 'rb').read(), channels=3)
