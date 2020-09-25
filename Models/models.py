@@ -210,10 +210,10 @@ if __name__ == '__main__':
     img = transform_images(img, size=416)
 
     model = yoloV3(classes=80)
-
+    print(model.summary())
     boxes, scores, classes, num = model(img)
-    print(f'boxes : {boxes}')
-    print(f'scores : {scores}')
-    print(f'classes : {classes}')
-    print(f'num : {num}')
+    print(f'boxes : {boxes.shape}')
+    print(f'scores : {scores.shape}')
+    print(f'classes : {classes.shape}')
+    print(f'num : {num.shape}')
 
